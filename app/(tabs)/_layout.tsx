@@ -1,7 +1,18 @@
+import { useAuth } from "@/context/authcontext";
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
 
 export default function TabLayout() {
+  const router = useRouter();
+  const segments = useSegments();
+  const user = useAuth();
+  useEffect(() => {
+    if (!user.isUser && segments[0] === "(tabs)") {
+      router.replace("/");
+    }
+  }, [user.isUser, segments, router]);
+
   return (
     <Tabs
       screenOptions={{
@@ -30,7 +41,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
@@ -63,6 +74,19 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "list" : "list-outline"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
               size={24}
               color={color}
             />

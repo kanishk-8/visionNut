@@ -1,11 +1,15 @@
+import { useAuth } from "@/context/authcontext";
 import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   AppState,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -24,39 +28,63 @@ AppState.addEventListener("change", (state) => {
 const landingpage = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [sheetIndex, setSheetIndex] = useState<number>(-1);
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const router = useRouter();
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.isUser) {
+      router.replace("/(tabs)/home");
+    }
+  }, [auth.isUser, router]);
+
+  const snapPoints = ["85%", "50%"]; // index 0 = 80%, index 1 = 50%
 
   const handleOpenSignup = () => {
-    setIsBottomSheetOpen(true);
-    bottomSheetRef.current?.expand();
+    setIsBottomSheetOpen(true); // must be set before sheet responds to keyboard
+    bottomSheetRef.current?.snapToIndex(1); // 50%
   };
+
   const [loading, setLoading] = useState(false);
   async function handleAuth() {
     setLoading(true);
-    if (isSignUp) {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.signUp({
-        email: emailAddress,
-        password: password,
-      });
-      if (error) Alert.alert(error.message);
-      if (!session)
-        Alert.alert("Please check your inbox for email verification!");
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: emailAddress,
-        password: password,
-      });
-      if (error) Alert.alert(error.message);
-      else router.push("/(tabs)");
+    try {
+      if (isSignUp) {
+        const { error, session } = await auth.signup(emailAddress, password);
+        if (error) Alert.alert(error.message);
+        else Alert.alert("Please check your inbox for email verification!");
+      } else {
+        await auth.login(emailAddress, password);
+        router.push("/(tabs)/home");
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
     }
     setLoading(false);
   }
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      if (sheetIndex !== -1) {
+        console.log("Keyboard shown, expanding bottom sheet");
+        bottomSheetRef.current?.snapToIndex(2); // 80%
+      }
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      if (sheetIndex !== -1) {
+        console.log("Keyboard hidden, collapsing bottom sheet");
+        bottomSheetRef.current?.snapToIndex(1); // 50%
+      }
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [sheetIndex]);
 
   return (
     <View style={styles.container}>
@@ -70,61 +98,73 @@ const landingpage = () => {
       </TouchableOpacity>
       <BottomSheet
         ref={bottomSheetRef}
-        index={-1} // Closed by default
-        snapPoints={["50%", "60%"]}
+        index={-1}
+        snapPoints={snapPoints}
         enablePanDownToClose
         onClose={() => setIsBottomSheetOpen(false)}
+        onChange={(index) => {
+          setSheetIndex(index); // 👈 capture current index
+          setIsBottomSheetOpen(index !== -1);
+        }}
         style={styles.bottomSheet}
       >
-        <BottomSheetView style={styles.bottomSheetContent}>
-          <Text style={styles.signupTitle}>
-            {isSignUp ? "Create Account" : "Welcome Back!"}
-          </Text>
-
-          <TextInput
-            autoCapitalize="none"
-            value={emailAddress}
-            placeholder="Email..."
-            onChangeText={setEmailAddress}
-            style={styles.input}
-            placeholderTextColor="#999"
-          />
-          <TextInput
-            value={password}
-            placeholder="Password..."
-            secureTextEntry={true}
-            onChangeText={setPassword}
-            style={styles.input}
-            placeholderTextColor="#999"
-          />
-          <TouchableOpacity
-            style={styles.signinButton}
-            onPress={handleAuth}
-            disabled={loading}
-          >
-            <Text style={styles.signinButtonText}>
-              {isSignUp ? "Sign Up" : "Sign In"}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
+          <BottomSheetView style={styles.bottomSheetContent}>
+            <Text style={styles.signupTitle}>
+              {isSignUp ? "Create Account" : "Welcome Back!"}
             </Text>
-          </TouchableOpacity>
 
-          {/* Google OAuth */}
-          <TouchableOpacity style={styles.oauthButton} onPress={() => {}}>
-            <Ionicons name="logo-google" size={24} color="#3fa4d1" />
-            <Text style={styles.oauthButtonText}>Sign in with Google</Text>
-          </TouchableOpacity>
+            <TextInput
+              autoCapitalize="none"
+              value={emailAddress}
+              placeholder="Email..."
+              onChangeText={setEmailAddress}
+              onFocus={() => bottomSheetRef.current?.snapToIndex(0)} // expand to 80%
+              style={styles.input}
+              placeholderTextColor="#999"
+            />
+            <TextInput
+              value={password}
+              placeholder="Password..."
+              secureTextEntry={true}
+              onChangeText={setPassword}
+              onFocus={() => bottomSheetRef.current?.snapToIndex(0)} // expand to 80%
+              style={styles.input}
+              placeholderTextColor="#999"
+            />
 
-          {/* Link to sign up page */}
-          <View style={styles.signupFooter}>
-            <Text style={styles.footerText}>
-              {isSignUp ? "Already have an account?" : "Don't have an account?"}
-            </Text>
-            <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
-              <Text style={styles.signupLink}>
-                {isSignUp ? "Sign In" : "Sign Up"}
+            <TouchableOpacity
+              style={styles.signinButton}
+              onPress={handleAuth}
+              disabled={loading}
+            >
+              <Text style={styles.signinButtonText}>
+                {isSignUp ? "Sign Up" : "Sign In"}
               </Text>
             </TouchableOpacity>
-          </View>
-        </BottomSheetView>
+
+            <TouchableOpacity style={styles.oauthButton} onPress={() => {}}>
+              <Ionicons name="logo-google" size={24} color="#3fa4d1" />
+              <Text style={styles.oauthButtonText}>Sign in with Google</Text>
+            </TouchableOpacity>
+
+            <View style={styles.signupFooter}>
+              <Text style={styles.footerText}>
+                {isSignUp
+                  ? "Already have an account?"
+                  : "Don't have an account?"}
+              </Text>
+              <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
+                <Text style={styles.signupLink}>
+                  {isSignUp ? "Sign In" : "Sign Up"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </BottomSheetView>
+        </KeyboardAvoidingView>
       </BottomSheet>
     </View>
   );
