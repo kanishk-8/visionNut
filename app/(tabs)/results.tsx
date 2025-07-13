@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -14,7 +14,7 @@ import {
   clearScanResults,
   deleteScanResult,
   loadScanResults,
-} from "../utils/storage";
+} from "../../utils/storage";
 
 export default function ResultsScreen() {
   const [scanResults, setScanResults] = useState<ScanResult[]>([]);
@@ -144,29 +144,36 @@ export default function ResultsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Scan History</Text>
-        <TouchableOpacity onPress={clearHistory} style={styles.clearButton}>
-          <Ionicons name="trash-outline" size={20} color="#ff3b30" />
+    <>
+      <Stack.Screen
+        options={{
+          title: "Scan History",
+          headerRight: () => (
+            <TouchableOpacity
+              style={{ marginRight: 30 }}
+              onPress={clearHistory}
+            >
+              <Ionicons name="trash-outline" size={24} color="#FF5722" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <View style={styles.container}>
+        <FlatList
+          data={scanResults}
+          renderItem={renderScanResult}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+        />
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={() => router.push("./camera-realtime")}
+        >
+          <Ionicons name="camera" size={24} color="white" />
         </TouchableOpacity>
       </View>
-
-      <FlatList
-        data={scanResults}
-        renderItem={renderScanResult}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-      />
-
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => router.push("./camera-realtime")}
-      >
-        <Ionicons name="camera" size={24} color="white" />
-      </TouchableOpacity>
-    </View>
+    </>
   );
 }
 
@@ -174,25 +181,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8f9fa",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  clearButton: {
-    padding: 8,
   },
   list: {
     padding: 20,
@@ -288,7 +276,7 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: "absolute",
-    bottom: 30,
+    bottom: 90,
     right: 30,
     width: 56,
     height: 56,

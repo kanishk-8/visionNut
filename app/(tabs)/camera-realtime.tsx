@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
-import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { generateProductSummary } from "../utils/gemini";
-import { saveScanResult } from "../utils/storage";
-import { DetectedProduct, detectProductRealtime } from "../utils/visionApi";
+import { generateProductSummary } from "../../utils/gemini";
+import { saveScanResult } from "../../utils/storage";
+import { DetectedProduct, detectProductRealtime } from "../../utils/visionApi";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -32,11 +32,25 @@ export default function RealtimeCameraScreen() {
   const [isDetecting, setIsDetecting] = useState(true);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cameraKey, setCameraKey] = useState(0);
   const cameraRef = useRef<CameraView>(null);
   const router = useRouter();
 
+  useFocusEffect(
+    useCallback(() => {
+      setCameraKey((prev) => prev + 1); // Force CameraView to re-mount
+      console.log("Camera mounted, starting detection");
+      setIsDetecting(true);
+      return () => {
+        setIsDetecting(false);
+        console.log("Camera unmounted, stopping detection");
+        setDetectedObjects([]);
+      };
+    }, [])
+  );
+
   useEffect(() => {
-    let detectionInterval: NodeJS.Timeout;
+    let detectionInterval: any;
 
     if (isDetecting && permission?.granted) {
       detectionInterval = setInterval(() => {
@@ -140,7 +154,12 @@ export default function RealtimeCameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing={facing} />
+      <CameraView
+        key={cameraKey}
+        ref={cameraRef}
+        style={styles.camera}
+        facing={facing}
+      />
 
       {/* Detection Overlays - Now outside CameraView */}
       {detectedObjects.map((obj) => (
@@ -273,7 +292,7 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     position: "absolute",
-    bottom: 50,
+    bottom: 90,
     left: 0,
     right: 0,
     alignItems: "center",
