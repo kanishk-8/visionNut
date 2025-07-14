@@ -1,4 +1,12 @@
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 const OnlineStore = () => {
   const products = [
@@ -47,6 +55,15 @@ const OnlineStore = () => {
   return (
     <View style={{ flex: 1 }}>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            colors={["#eeba15"]}
+            refreshing={false}
+            onRefresh={() => {
+              Alert.alert("Refreshed");
+            }}
+          />
+        }
         data={products}
         style={styles.itemlist}
         showsVerticalScrollIndicator={false}
