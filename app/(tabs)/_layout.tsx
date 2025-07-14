@@ -2,6 +2,7 @@ import { useAuth } from "@/context/authcontext";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { TouchableOpacity } from "react-native";
 
 export default function TabLayout() {
   const router = useRouter();
@@ -17,6 +18,23 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#eeba15",
+        tabBarButton: ({ children, ...props }) => (
+          <TouchableOpacity
+            activeOpacity={1} // Removes touch opacity effect
+            {...Object.fromEntries(
+              Object.entries(props).filter(
+                ([key, value]) => !(key === "delayLongPress" && value === null)
+              )
+            )}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {children}
+          </TouchableOpacity>
+        ),
         tabBarStyle: {
           backgroundColor: "#3fa4d1",
           position: "absolute",
@@ -29,21 +47,23 @@ export default function TabLayout() {
           paddingTop: 5,
           elevation: 0,
         },
+
         tabBarInactiveTintColor: "#fff",
         // tabBarActiveTintColor: "#eeba15",
         headerStyle: {
-          backgroundColor: "#f8f9fa",
+          backgroundColor: "#3fa4d1",
         },
-        headerTintColor: "#000",
+        headerTintColor: "#fff",
         headerTitleStyle: {
           fontWeight: "bold",
+          fontSize: 24,
         },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
+          title: "VisionNut",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}

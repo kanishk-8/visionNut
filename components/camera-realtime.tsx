@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { generateProductSummary } from "../../utils/gemini";
-import { saveScanResult } from "../../utils/storage";
-import { DetectedProduct, detectProductRealtime } from "../../utils/visionApi";
+import { generateProductSummary } from "../utils/gemini";
+import { saveScanResult } from "../utils/storage";
+import { DetectedProduct, detectProductRealtime } from "../utils/visionApi";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -189,12 +189,12 @@ export default function RealtimeCameraScreen() {
 
       {/* Top Controls - Now outside CameraView */}
       <View style={styles.topControls}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.controlButton}
           onPress={() => router.back()}
         >
           <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.statusContainer}>
           <View
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   topControls: {
     position: "absolute",
-    top: 50,
+    top: 10,
     left: 0,
     right: 0,
     flexDirection: "row",

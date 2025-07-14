@@ -1,9 +1,11 @@
 import { useAuth } from "@/context/authcontext";
 import { supabase } from "@/utils/supabase";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -96,7 +98,17 @@ export default function Account() {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
-        <Text style={styles.header}>Profile</Text>
+        <View>
+          <Image source={{ uri: avatarUrl }} style={styles.avator} />
+          <TouchableOpacity
+            style={styles.uploadicon}
+            onPress={() => {
+              Alert.alert("Upload avatar functionality not implemented yet.");
+            }}
+          >
+            <Ionicons name="camera" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <TextInput
             placeholder="Email"
@@ -143,7 +155,8 @@ export default function Account() {
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    justifyContent: "center",
+    marginTop: 30,
+    // justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f0f4f8",
   },
@@ -159,12 +172,22 @@ const styles = StyleSheet.create({
     elevation: 6,
     alignItems: "center",
   },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#3fa4d1",
-    marginBottom: 24,
-    textAlign: "center",
+  avator: {
+    width: 200,
+    height: 200,
+    borderRadius: 50,
+    marginBottom: 20,
+    borderColor: "#ddd",
+    borderWidth: 1,
+  },
+  uploadicon: {
+    position: "absolute",
+    bottom: 40,
+    right: 20,
+    backgroundColor: "#3fa4d1",
+    padding: 10,
+    borderRadius: 50,
+    elevation: 5,
   },
   input: {
     width: "100%",
