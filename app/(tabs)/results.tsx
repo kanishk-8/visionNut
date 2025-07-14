@@ -82,7 +82,7 @@ export default function ResultsScreen() {
       >
         <View style={styles.resultHeader}>
           <View style={styles.iconContainer}>
-            <Ionicons name="cube-outline" size={24} color="#007AFF" />
+            <Ionicons name="cube-outline" size={24} color="#3fa4d1" />
           </View>
           <View style={styles.resultInfo}>
             <Text style={styles.productName}>{item.productName}</Text>
