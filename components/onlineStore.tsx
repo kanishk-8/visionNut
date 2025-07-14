@@ -61,7 +61,7 @@ const OnlineStore = () => {
           </View>
         )}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingBottom: 80 }}
       />
     </View>
   );

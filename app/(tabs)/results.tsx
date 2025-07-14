@@ -166,12 +166,6 @@ export default function ResultsScreen() {
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />
-        <TouchableOpacity
-          style={styles.floatingButton}
-          onPress={() => router.push("./camera-realtime")}
-        >
-          <Ionicons name="camera" size={24} color="white" />
-        </TouchableOpacity>
       </View>
     </>
   );
@@ -183,7 +177,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   list: {
-    padding: 20,
+    paddingBottom: 80,
+    paddingHorizontal: 16,
+    paddingTop: 10,
   },
   resultItem: {
     backgroundColor: "white",
@@ -273,24 +269,5 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "600",
-  },
-  floatingButton: {
-    position: "absolute",
-    bottom: 90,
-    right: 30,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#007AFF",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
 });

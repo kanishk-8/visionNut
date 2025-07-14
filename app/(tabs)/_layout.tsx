@@ -17,7 +17,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#eeba15",
+        tabBarActiveTintColor: "#fff",
         tabBarButton: ({ children, ...props }) => (
           <TouchableOpacity
             activeOpacity={1} // Removes touch opacity effect
@@ -48,7 +48,7 @@ export default function TabLayout() {
           elevation: 0,
         },
 
-        tabBarInactiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#ccc",
         // tabBarActiveTintColor: "#eeba15",
         headerStyle: {
           backgroundColor: "#3fa4d1",

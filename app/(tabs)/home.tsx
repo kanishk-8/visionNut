@@ -24,7 +24,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 const Index = () => {
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState<any>(true);
   const [pulsing, setPulsing] = useState(true);
   const pulse = useSharedValue(1);
   const animation = useRef<LottieView>(null);
@@ -120,11 +120,9 @@ const Index = () => {
             style={{
               width: 50,
               height: 50,
-              // backgroundColor: "#eee",
             }}
-            // Find more Lottie files at https://lottiefiles.com/featured
             source={require("../../assets/lottie/bubble.json")}
-          />{" "}
+          />
         </TouchableOpacity>
       </Animated.View>
     </KeyboardAvoidingView>
