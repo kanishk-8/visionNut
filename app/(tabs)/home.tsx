@@ -1,5 +1,5 @@
 // Updated home.tsx with card rendering
-import RealtimeCameraScreen from "@/components/camera-realtime";
+import RealtimeCameraScreen from "@/components/cameralive";
 import ComparisionCard from "@/components/comparisionCard";
 import SimilarList from "@/components/similarList";
 import SingleItemCard from "@/components/singleItemCard";
@@ -115,7 +115,7 @@ const Index = () => {
               ) {
                 Alert.alert(
                   "Audio Error",
-                  "Audio focus could not be acquired. Please check your device settings or try again later."
+                  "Audio focus could not be acquired. Please check your device settings or try again later.",
                 );
               } else {
                 console.error("Audio playback error:", audioErr);
@@ -131,10 +131,10 @@ const Index = () => {
                 withTiming(1, {
                   duration: 500,
                   easing: Easing.inOut(Easing.ease),
-                })
+                }),
               ),
               -1,
-              true
+              true,
             );
 
             setTimeout(() => {
@@ -209,7 +209,7 @@ const Index = () => {
       setIsMicActive(true);
 
       await recording.prepareToRecordAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
+        Audio.RecordingOptionsPresets.HIGH_QUALITY,
       );
       await recording.startAsync();
 
@@ -223,7 +223,7 @@ const Index = () => {
               encoding: FileSystem.EncodingType.Base64,
             });
             const binary = Uint8Array.from(atob(base64), (c) =>
-              c.charCodeAt(0)
+              c.charCodeAt(0),
             );
             ws.current?.send(binary);
           }
@@ -292,7 +292,7 @@ const Index = () => {
                 price: `$${p.price}`,
                 description: p.description,
                 image: p.image_url,
-              })
+              }),
             )}
           />
         );

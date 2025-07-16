@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   AppState,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -86,9 +87,17 @@ const landingpage = () => {
     };
   }, [sheetIndex]);
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Loading...</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>👀💦</Text>
+      <Image source={require("@/assets/images/icon.png")} style={styles.logo} />
+      <Text style={styles.test}>💦</Text>
       <Text style={styles.title}>Welcome to VisionNut</Text>
       <Text style={styles.subtitle}>
         Empowering your vision with smart solutions.
@@ -174,9 +183,17 @@ export default landingpage;
 
 const styles = StyleSheet.create({
   logo: {
-    fontSize: 64,
+    height: 100,
+    width: 100,
     marginBottom: 20,
     textAlign: "center",
+  },
+  test: {
+    fontSize: 30,
+    textAlign: "center",
+    marginBottom: 20,
+    marginLeft: 130,
+    marginTop: -80,
   },
   container: {
     flex: 1,
